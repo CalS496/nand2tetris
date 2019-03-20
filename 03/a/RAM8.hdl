@@ -1,0 +1,62 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/03/a/RAM8.hdl
+
+/**
+ * Memory of 8 registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM8 {
+    IN in[16], load, address[3];
+    OUT out[16];
+
+
+
+    PARTS:
+    // Put your code here:
+//RAM8, 
+//To determine specific address
+DMux(in=load, sel=address[2], a=la, b=lb);
+
+DMux(in=la, sel=address[1], a=laa, b=lab);
+
+DMux(in=lb, sel=address[1], a=lba, b=lbb);
+
+DMux(in=laa, sel=address[0], a=register00, b=register01);
+
+DMux(in=lab, sel=address[0], a=register02, b=register03);
+
+DMux(in=lba, sel=address[0], a=register04, b=register05);
+
+DMux(in=lbb, sel=address[0], a=register06, b=register07);
+
+//Saves onto the specific address, all else saves as 0
+Register(in=in, load=register00, out=aa);
+Register(in=in, load=register01, out=ab);
+Register(in=in, load=register02, out=ac);
+Register(in=in, load=register03, out=ad);
+Register(in=in, load=register04, out=ae);
+Register(in=in, load=register05, out=af);
+Register(in=in, load=register06, out=ag);
+Register(in=in, load=register07, out=ah);
+
+//Reverse of first block; finds the correct address
+Mux16(a=aa, b=ab, sel=address[0], out=ma);
+Mux16(a=ac, b=ad, sel=address[0], out=mb);
+Mux16(a=ae, b=af, sel=address[0], out=mc);
+Mux16(a=ag, b=ah, sel=address[0], out=md);
+
+Mux16(a=ma, b=mb, sel=address[1], out=maa);
+Mux16(a=mc, b=md, sel=address[1], out=mab);
+
+Mux16(a=maa, b=mab, sel=address[2], out=out);
+
+//Mux16(a=false, b=mad, sel=load, out=out);
+//Register(in=mad, load=load, out[0..15]=aaa);
+
+
+}

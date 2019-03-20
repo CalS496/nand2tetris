@@ -1,0 +1,52 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/03/b/RAM512.hdl
+
+/**
+ * Memory of 512 registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM512 {
+    IN in[16], load, address[9];
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+//Similar to previous RAMs in design
+DMux(in=load, sel=address[8], a=la, b=lb);
+
+DMux(in=la, sel=address[7], a=laa, b=lab);
+
+DMux(in=lb, sel=address[7], a=lba, b=lbb);
+
+DMux(in=laa, sel=address[6], a=RAM6400, b=RAM6401);
+
+DMux(in=lab, sel=address[6], a=RAM6402, b=RAM6403);
+
+DMux(in=lba, sel=address[6], a=RAM6404, b=RAM6405);
+
+DMux(in=lbb, sel=address[6], a=RAM6406, b=RAM6407);
+
+RAM64(in=in, load=RAM6400, address=address[0..5], out=aa);
+RAM64(in=in, load=RAM6401, address=address[0..5], out=ab);
+RAM64(in=in, load=RAM6402, address=address[0..5], out=ac);
+RAM64(in=in, load=RAM6403, address=address[0..5], out=ad);
+RAM64(in=in, load=RAM6404, address=address[0..5], out=ae);
+RAM64(in=in, load=RAM6405, address=address[0..5], out=af);
+RAM64(in=in, load=RAM6406, address=address[0..5], out=ag);
+RAM64(in=in, load=RAM6407, address=address[0..5], out=ah);
+
+Mux16(a=aa, b=ab, sel=address[6], out=ma);
+Mux16(a=ac, b=ad, sel=address[6], out=mb);
+Mux16(a=ae, b=af, sel=address[6], out=mc);
+Mux16(a=ag, b=ah, sel=address[6], out=md);
+
+Mux16(a=ma, b=mb, sel=address[7], out=maa);
+Mux16(a=mc, b=md, sel=address[7], out=mab);
+
+Mux16(a=maa, b=mab, sel=address[8], out=out);
+}
